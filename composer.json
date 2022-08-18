@@ -1,0 +1,14 @@
+{
+    "name": "snezhig/at-category-api",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "snezhig"
+        }
+    ],
+    "require": {}
+}
