@@ -9,5 +9,7 @@ RUN apt update -y && apt upgrade -y
 RUN apt install -y git wget zip
 RUN install-php-extensions gd xdebug-3.1.0 zip
 
+RUN docker-php-ext-install pdo pdo_mysql
+
 RUN usermod -u 1000 -aG www-data www-data
 RUN chown www-data:www-data /var/www
