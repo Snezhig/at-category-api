@@ -15,7 +15,7 @@ class CategorySort
 
     private function getSort(): array
     {
-        $sort = $this->request->get('sort', '-id');
+        $sort = $this->request->get('sort', '-created_at');
         $order = 'ASC';
         //Can be retrieved from service or something like that
         $fields = ['description', 'name', 'id', 'slug', 'active'];
@@ -23,7 +23,7 @@ class CategorySort
             $sort = Str::substr($sort, 1);
             $order = 'DESC';
         }
-        $sort = in_array($sort, $fields, true) ? $sort : 'id';
+        $sort = in_array($sort, $fields, true) ? $sort : 'created_at';
 
         return [$sort => $order];
     }

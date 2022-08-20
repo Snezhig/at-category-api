@@ -2,11 +2,31 @@
 
 namespace App\Services;
 
+use App\Exceptions\Models\ModelExistException;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Builder;
 
 class CategoryService
 {
+    /**
+     * @param array $data
+     * @return int
+     * @throws ModelExistException
+     */
+    public function save(array $data): int
+    {
+        $exists = Category::query()->where('slug', $data['slug'])->exists();
+        if ($exists) {
+            throw new ModelExistException();
+        }
+        return Category::create($data)->id;
+    }
+
+    public function update(Category $category, array $data): bool
+    {
+        return $category->update($data);
+    }
+
     public function getCategories(array $filter, array $sort, int $page = 1, int $perPage = 15): array
     {
         $query = Category::query();

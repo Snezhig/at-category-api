@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Exceptions\Models\ModelExistException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Filter\CategoryFilter;
 use App\Http\Requests\Pagination\CategoryPagination;
@@ -11,6 +12,7 @@ use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -19,12 +21,7 @@ class CategoryController extends Controller
     )
     {
     }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
+    
     public function index(CategoryFilter $filter, CategorySort $sort, CategoryPagination $pagination): JsonResponse
     {
         return response()->json(
@@ -37,45 +34,59 @@ class CategoryController extends Controller
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function store(Request $request)
+
+    public function store(Request $request): JsonResponse
     {
-        //
+        $rules = collect([
+            'slug' => 'required|string',
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'active' => 'required|boolean'
+        ]);
+
+        $input = $request->only($rules->keys()->toArray());
+        $validator = Validator::make($input, $rules->toArray());
+        $code = Response::HTTP_OK;
+
+        try {
+            if ($validator->fails()) {
+                $data = $validator->errors()->toArray();
+                $code = Response::HTTP_BAD_REQUEST;
+            } else {
+                $data = ['id' => $this->service->save($input)];
+            }
+        } catch (ModelExistException $e) {
+            $data = ['error' => $e->getMessage()];
+            $code = Response::HTTP_CONFLICT;
+        }
+
+        return response()->json($data, $code);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @return JsonResponse
-     */
     public function show(string $key): JsonResponse
     {
         $column = is_numeric($key) ? 'id' : 'slug';
         return response()->json(Category::query()->where($column, $key)->first());
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param Category $category
-     * @return Response
-     */
-    public function update(Request $request, Category $category)
+
+    public function update(Request $request, Category $category): JsonResponse
     {
-        //
+        $rules = collect([
+            'slug' => 'string',
+            'name' => 'string',
+            'description' => 'string',
+            'active' => 'boolean'
+        ]);
+        $data = $request->only($rules->keys()->toArray());
+        $validator = Validator::make($data, $rules->toArray());
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toArray(), Response::HTTP_BAD_REQUEST);
+        }
+        return response()->json(['status' => $this->service->update($category, $data)]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Category $category
-     */
+
     public function destroy(Category $category): JsonResponse
     {
         return response()->json(['status' => $category->delete()]);
