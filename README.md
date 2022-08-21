@@ -1,64 +1,108 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## Installation
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+* Clone git: `git clone https://github.com/Snezhig/at-category-api.git`
+* Move to folder: `cd at-category-api`
+* Create .env: 'cp .env.template .env'
+* Build: `docker-compose up --build -d`
+* Open container shell: `docker-compose exec -u 1000 php bash`
+* Generate key: `php artisan key:generate`
+* Run migration and seeders: `php artisan migrate:fresh --seed`
+* It's ready
+* **Optional** import [postman collection](./docs/Collection.postman_collection)
 
-## About Laravel
+## Task
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+* Create a model with the following fields:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```yaml
+id: int [auto]
+slug: string // Unique name for category [required]
+name: string // Category's name [required]
+description: string // Description of category [optional]
+created_at: date // [auto]
+active: boolean // [required]
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* Realise api methods:
+    * [Create](#Create a category) a category
+    * [Update](#Update a category) a category (partial)
+    * [Delete](#Delete a category) a category
+    * [Get](#Get a category) a category by id or slug
+    * [Get list](#List of categories) of categories
 
-## Learning Laravel
+## Examples
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Create a category
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```shell
+curl --location --request POST 'localhost/api/v1/categories/' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "slug": "honey",
+    "description": "",
+    "active": true,
+    "name": "Мёд"
+}'
+```
 
-## Laravel Sponsors
+### Get a category
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```shell
+curl --location --request GET 'localhost/api/v1/categories/honey/' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "slug": "fdfdf",
+    "description": "test-desription",
+    "active": "0",
+    "name": "test_name",
+    "anot": 3
+}'
+```
 
-### Premium Partners
+### Update a category
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```shell
+curl --location --request PATCH 'localhost/api/v1/categories/honey/' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "description": "Some description about honey"
+}'
+```
 
-## Contributing
+### Delete a category
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```shell
+curl --location --request DELETE 'localhost/api/v1/categories/honey/'
+```
 
-## Code of Conduct
+### List of categories
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+* Filters (in query):
+    * name
+    * description
+    * search (ignore `name` and `description` if exist)
+    * active (accept 0,1,true,false)
+* Sort (?sort=#field#):
+    * id, slug, name, description, active (set `-` before field to do DESC order)
+* Pagination (in query):
+    * page: 1 by default
+    * pageSize: 2 by default
 
-## Security Vulnerabilities
+```shell
+curl --location --request GET 'localhost/api/v1/categories/'
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```shell
+# DESC sort by name
+curl --location --request GET 'localhost/api/v1/categories/?sort=-name'
+```
 
-## License
+```shell
+# Filter by active
+curl --location --request GET 'localhost/api/v1/categories/?active=true'
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```shell
+# Get fifth page with up to ten elements on the page
+curl --location --request GET 'localhost/api/v1/categories/?page=5&pageSize=10'
+```

@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "86c23e6f-f94e-40fa-add6-e022f6dfd349",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create a category",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"slug\": \"honey\",\r\n    \"description\": \"\",\r\n    \"active\": true,\r\n    \"name\": \"Мёд\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost/api/v1/categories/",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"categories",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update category",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"description\": \"Some description about honey\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost/api/v1/categories/:key/",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"categories",
+						":key",
+						""
+					],
+					"variable": [
+						{
+							"key": "key",
+							"value": "honey"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get category",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"slug\": \"fdfdf\",\r\n    \"description\": \"test-desription\",\r\n    \"active\": \"0\",\r\n    \"name\": \"test_name\",\r\n    \"anot\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost/api/v1/categories/:key/",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"categories",
+						":key",
+						""
+					],
+					"variable": [
+						{
+							"key": "key",
+							"value": "honey"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove a category",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"slug\": \"fdfdf\",\r\n    \"description\": \"test-desription\",\r\n    \"active\": \"0\",\r\n    \"name\": \"test_name\",\r\n    \"anot\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost/api/v1/categories/:key/",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"categories",
+						":key",
+						""
+					],
+					"variable": [
+						{
+							"key": "key",
+							"value": "honey"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List of categories",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost/api/v1/categories/?page=4&pageSize=10",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"categories",
+						""
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "4"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

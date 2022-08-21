@@ -21,7 +21,7 @@ class CategoryController extends Controller
     )
     {
     }
-    
+
     public function index(CategoryFilter $filter, CategorySort $sort, CategoryPagination $pagination): JsonResponse
     {
         return response()->json(
@@ -38,9 +38,9 @@ class CategoryController extends Controller
     public function store(Request $request): JsonResponse
     {
         $rules = collect([
-            'slug' => 'required|string',
+            'slug' => 'required|string|not_regex:/[0-9]/',
             'name' => 'required|string',
-            'description' => 'required|string',
+            'description' => 'string|nullable',
             'active' => 'required|boolean'
         ]);
 
@@ -65,30 +65,38 @@ class CategoryController extends Controller
 
     public function show(string $key): JsonResponse
     {
-        $column = is_numeric($key) ? 'id' : 'slug';
-        return response()->json(Category::query()->where($column, $key)->first());
+        return response()->json($this->service->get($key));
     }
 
 
-    public function update(Request $request, Category $category): JsonResponse
+    public function update(Request $request, $key): JsonResponse
     {
         $rules = collect([
-            'slug' => 'string',
+            'slug' => 'string|not_regex:/[0-9]/',
             'name' => 'string',
             'description' => 'string',
             'active' => 'boolean'
         ]);
-        $data = $request->only($rules->keys()->toArray());
-        $validator = Validator::make($data, $rules->toArray());
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toArray(), Response::HTTP_BAD_REQUEST);
+        $input = $request->only($rules->keys()->toArray());
+        $validator = Validator::make($input, $rules->toArray());
+        $code = Response::HTTP_OK;
+        try {
+            if ($validator->fails()) {
+                $data = ['errors' => $validator->errors()->toArray()];
+                $code = Response::HTTP_BAD_REQUEST;
+            } else {
+                $data = ['status' => $this->service->update($key, $input)];
+            }
+        } catch (ModelExistException $e) {
+            $data = ['errors' => [$e->getMessage()]];
+            $code = Response::HTTP_CONFLICT;
         }
-        return response()->json(['status' => $this->service->update($category, $data)]);
+        return response()->json($data, $code);
     }
 
 
-    public function destroy(Category $category): JsonResponse
+    public function destroy(string $key): JsonResponse
     {
-        return response()->json(['status' => $category->delete()]);
+        return response()->json(['status' => $this->service->delete($key)]);
     }
 }

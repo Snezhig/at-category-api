@@ -21,8 +21,8 @@ Route::prefix('api')
         Route::prefix('categories')->group(static function () {
             Route::get('/{key}/', [CategoryController::class, 'show']);
             Route::get('/', [CategoryController::class, 'index']);
-            Route::delete('/{category}/', [CategoryController::class, 'destroy']);
+            Route::delete('/{key}/', [CategoryController::class, 'destroy']);
             Route::post('/', [CategoryController::class, 'store']);
-            Route::patch('/{category}/', [CategoryController::class, 'update']);
+            Route::patch('/{key}/', [CategoryController::class, 'update']);
         });
     });
