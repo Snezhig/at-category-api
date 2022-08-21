@@ -2,9 +2,10 @@
 
 * Clone git: `git clone https://github.com/Snezhig/at-category-api.git`
 * Move to folder: `cd at-category-api`
-* Create .env: 'cp .env.template .env'
+* Create .env: `cp .env.example .env`
 * Build: `docker-compose up --build -d`
 * Open container shell: `docker-compose exec -u 1000 php bash`
+* Run composer: `composer install`
 * Generate key: `php artisan key:generate`
 * Run migration and seeders: `php artisan migrate:fresh --seed`
 * It's ready
